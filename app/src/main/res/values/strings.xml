@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Ficheros1</string>
+    <string name="contenido_a_escribir">Contenido a escribir:</string>
+    <string name="aniadir_fich_int">Añadir fich int</string>
+    <string name="aniadir_fich_ext">Añadir fich ext</string>
+    <string name="leer_fich_int">Leer fich int</string>
+    <string name="leer_fich_ext">Leer fich ext</string>
+    <string name="leer_recurso">Leer recurso</string>
+    <string name="borrar_fichero_interno">Borrar fichero interno</string>
+    <string name="borrar_fichero_externo">Borrar fichero externo</string>
+    <string name="el_contenido_del_fichero_es">El contenido del fichero es:</string>
+    <string name="ejercicio_1">Ejercicio 1</string>
+    <string name="ejercicio_2">Ejercicio 2</string>
+    <string name="ejercicio3">ejercicio3</string>
 </resources>
