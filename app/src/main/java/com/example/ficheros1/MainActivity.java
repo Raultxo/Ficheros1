@@ -10,14 +10,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +22,7 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
@@ -51,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtAEscribir = (EditText) findViewById(R.id.txtAEscribir);
-        contenidoFichero = (TextView) findViewById(R.id.contenidoFichero);
+        txtAEscribir = findViewById(R.id.txtAEscribir);
+        contenidoFichero = findViewById(R.id.contenidoFichero);
 
     }
 
@@ -73,20 +67,18 @@ public class MainActivity extends AppCompatActivity {
         try {
             ContextWrapper cw = new ContextWrapper(getApplicationContext());
             File ruta_sd = cw.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-            // File ruta_sd = Environment.getExternalStorageDirectory();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(ruta_sd.getAbsolutePath(), ARCHIVO_EXTERNO))));
 
-            String txtResult = "";
+            StringBuilder txtResult = new StringBuilder();
             String linea = br.readLine();
-            while(linea != null)
-            {
-                txtResult += linea;
+            while(linea != null) {
+                txtResult.append(linea);
                 linea = br.readLine();
             }
             br.close();
 
-            contenidoFichero.setText(txtResult);
+            contenidoFichero.setText(txtResult.toString());
         }
         catch (Exception e) {
             contenidoFichero.setText("");
@@ -111,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void escribirInterno(View view) {
         try {
-            OutputStreamWriter osw = new OutputStreamWriter(openFileOutput(ARCHIVO_INTERNO, Context.MODE_APPEND));
+            FileOutputStream fos = openFileOutput(ARCHIVO_INTERNO, Context.MODE_APPEND);
+            OutputStreamWriter osw = new OutputStreamWriter(fos);
 
             osw.write(txtAEscribir.getText().toString() + "\n");
             osw.close();
@@ -142,17 +135,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void leerInterno(View view) {
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(ARCHIVO_INTERNO)));
+            FileInputStream fis = openFileInput(ARCHIVO_INTERNO);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
 
-            String txtResult = "";
+            StringBuilder txtResult = new StringBuilder();
             String linea = br.readLine();
             while(linea != null) {
-                txtResult += linea;
+                txtResult.append(linea);
                 linea = br.readLine();
             }
             br.close();
 
-            contenidoFichero.setText(txtResult);
+            contenidoFichero.setText(txtResult.toString());
         }
         catch (Exception e) {
             contenidoFichero.setText("");
@@ -184,15 +179,15 @@ public class MainActivity extends AppCompatActivity {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(getResources().openRawResource(R.raw.datos)));
 
-            String txtResult = "";
+            StringBuilder txtResult = new StringBuilder();
             String linea = br.readLine();
             while (linea != null) {
-                txtResult += linea;
+                txtResult.append(linea);
                 linea = br.readLine();
             }
             br.close();
 
-            contenidoFichero.setText(txtResult);
+            contenidoFichero.setText(txtResult.toString());
         }
         catch (Exception e) {
             contenidoFichero.setText("");
@@ -211,7 +206,9 @@ public class MainActivity extends AppCompatActivity {
         File f = new File (ruta_sd.getAbsolutePath(), ARCHIVO_EXTERNO);
 
         if(f.exists())
-            f.delete();
+            if(f.delete()) {
+                Toast.makeText(this, "Fichero externo borrado", Toast.LENGTH_LONG).show();
+            }
     }
 
     private static void solicitarPermiso (final String permiso,
@@ -226,13 +223,8 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle("Solicitud de permiso")
                     .setMessage(justificacion)
                     .setPositiveButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    ActivityCompat.requestPermissions(actividad,
-                                            new String[]{permiso}, requestCode);
-                                }
-                            }).show();
+                            (dialog, which) -> ActivityCompat.requestPermissions(actividad,
+                                    new String[]{permiso}, requestCode)).show();
         } else {
             //Muestra el cuadro de dialogo para la solicitud de permisos y
             //registra el permiso según respuesta del usuario
