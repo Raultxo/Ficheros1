@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,21 +42,14 @@ public class Ejercicio3 extends AppCompatActivity {
     }
 
     private void llenarListaWebs() {
-        try {
-            ArrayList<Web>listaWebFav = conseguirWebsDeRecurso();
-            if(listaWebFav == null)
-                throw new Exception("No se ha conseguido acceder al archivo contenedor de Webs Favoritas.");
 
-            Web[] datos = new Web[listaWebFav.size()];
-            for(int contDatos = 0; contDatos < datos.length; contDatos++)
-                datos[contDatos] = listaWebFav.get(contDatos);
+        ArrayList<Web>listaWebFav = conseguirWebsDeRecurso();
+        Web[] datos = new Web[listaWebFav.size()];
+        for(int contDatos = 0; contDatos < datos.length; contDatos++)
+            datos[contDatos] = listaWebFav.get(contDatos);
 
-            AdaptadorTitulares adaptadorTitulares = new AdaptadorTitulares(this, datos);
-            lvWebFav.setAdapter(adaptadorTitulares);
-        }
-        catch(Exception e) {
-            //DO NOTHING
-        }
+        AdaptadorTitulares adaptadorTitulares = new AdaptadorTitulares(this, datos);
+        lvWebFav.setAdapter(adaptadorTitulares);
     }
 
     private ArrayList<Web> conseguirWebsDeRecurso() {
@@ -91,7 +85,7 @@ public class Ejercicio3 extends AppCompatActivity {
         catch(Exception e) {
             Toast.makeText(this,"No se ha conseguido acceder al archivo contenedor de Webs Favoritas.",Toast.LENGTH_LONG ).show();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     private static class AdaptadorTitulares extends ArrayAdapter<Web> {
